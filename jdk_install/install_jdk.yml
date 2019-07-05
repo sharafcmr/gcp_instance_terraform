@@ -1,0 +1,11 @@
+---
+- name: Install JDK
+  hosts: test
+  become: true
+  become_user: root
+
+  tasks:
+  - name: Install JDK from remote nexus repo
+    yum:
+      name: http://34.68.208.111:8081/repository/rpms/java/jdk-8u211-linux-x64.rpm
+      state: present

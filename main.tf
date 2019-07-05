@@ -1,12 +1,5 @@
 
-resource "google_compute_disk" "node-" {
-  count        = "${var.node_count}"
-  name         = "iaac-test-node-${count.index}-data"
-  size         = "100"
-  type         = "pd-standard"
-  zone         = "asia-south1-a"
 
-}
 resource "google_compute_instance" "sharaftfsbxnode" {
   count        = "${var.node_count}"
   name         = "iaac-test-node-${count.index}"
@@ -16,6 +9,7 @@ resource "google_compute_instance" "sharaftfsbxnode" {
 metadata = {
     ssh-keys = "sharafudheen:${file("~/.ssh/id_rsa_gcp_nix_paas_sbx.pub")}"
   }
+
   can_ip_forward = true
   tags = ["webserver","centos"]
   boot_disk {
@@ -35,10 +29,9 @@ metadata = {
      /* count = "0" */
     }
   }
-  attached_disk {
-    source     = "${element(google_compute_disk.node-.*.self_link , count.index)}"
-    device_name = "dockervg"
+  scratch_disk {
   }
+  metadata_startup_script = "${file("bootstrap.sh")}"
   service_account {
     scopes = ["compute-rw"]
   }
